@@ -87,7 +87,7 @@ async def process_photo_uploading(msg: types.Message, state: FSMContext):
 @dp.message_handler(state=States.photos)
 async def process_text_uploading(msg: types.Message):
     """
-    Process text any text messages when state is 'photos'.
+    Process any text messages when state is 'photos'.
 
     Args:
         msg: message from user
@@ -102,7 +102,12 @@ async def process_text_uploading(msg: types.Message):
 @dp.message_handler(state=States.name)
 async def process_file_name(msg: types.Message, state: FSMContext):
     """
-    Process text any text messages when state is 'name'.
+    Process text message when state is 'name'.
+
+    User is supposed to pass a PDF file name in msg.text
+
+    Warning: msg.text used in unprocessed raw format.
+    This can lead to undefined behaviour
 
     Args:
         msg: message from user
@@ -145,7 +150,7 @@ async def process_upload(msg: types.Message):
 @dp.message_handler(state='*')
 async def process_text(msg: types.Message):
     """
-    Process text any text messages.
+    Process any text messages.
 
     Args:
         msg: message from user
