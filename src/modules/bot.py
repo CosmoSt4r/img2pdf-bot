@@ -2,6 +2,8 @@
 
 import os
 
-import telebot
+from aiogram import Bot
+from aiogram.dispatcher import Dispatcher
 
-bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
+bot = Bot(token=os.environ.get('BOT_TOKEN'))
+dp = Dispatcher(bot)

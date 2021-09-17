@@ -1,19 +1,26 @@
 """Module for message handlers."""
 
-from modules.bot import bot, telebot
+from aiogram import types
+from bot import bot, dp
 
 
-@bot.message_handler(commands=['start'])
-def handle_start_command(message: telebot.types.Message):
+@dp.message_handler(commands=['start'])
+async def process_start_command(msg: types.Message):
     """
-    Handle /start command.
+    Process /start command from user.
 
     Args:
-        message: message from user
-
-    Returns:
-        greeting message
+        msg: message from user
     """
-    reply: str = 'Добро пожаловать!'
+    await msg.reply('Привет!\nНапиши мне что-нибудь!')
 
-    return bot.send_message(message.from_user.id, reply)
+
+@dp.message_handler()
+async def process_text_message(msg: types.Message):
+    """
+    Process any text message from user.
+
+    Args:
+        msg: message from user
+    """
+    await bot.send_message(msg.from_user.id, msg.text)

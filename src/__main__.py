@@ -1,6 +1,8 @@
 """Main file to run bot."""
 
-from modules.handlers import bot
+from aiogram.utils import executor
+
+from modules.handlers import dp
 
 if __name__ == '__main__':
-    bot.polling()
+    executor.start_polling(dp)
