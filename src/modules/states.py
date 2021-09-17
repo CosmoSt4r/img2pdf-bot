@@ -1,11 +1,9 @@
 """Module for storing states for bot."""
 
-from aiogram.utils.helper import Helper, HelperMode, Item
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
-class States(Helper):
+class States(StatesGroup):
     """States for aiogram state machine."""
 
-    mode = HelperMode.snake_case
-
-    uploading = Item()
+    uploading = State()
