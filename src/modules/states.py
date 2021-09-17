@@ -6,4 +6,5 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class States(StatesGroup):
     """States for aiogram state machine."""
 
-    uploading = State()
+    photos = State()
+    name = State()
