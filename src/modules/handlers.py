@@ -109,19 +109,19 @@ async def process_file_name(msg: types.Message, state: FSMContext):
         state: current state
     """
     await msg.reply('Формирую PDF файл...', reply=False)
-    
+
     async with state.proxy() as pdf:
         pdf['name'] = 'media/{0}'.format(msg.text)
 
         photos = []
         for photo_id in pdf['photos']:
-            filepath = 'media/{0}.jpg'.format(photo_id)
-            await bot.download_file_by_id(photo_id, filepath)
-            photos.append(filepath)
+            photos.append('media/{0}.jpg'.format(photo_id))
+            await bot.download_file_by_id(photo_id, photos[-1])
 
         pdf_file_name = generate_pdf(photos, pdf['name'])
-        await bot.send_document(msg.from_user.id, open(pdf_file_name, 'rb'))
-    
+        with open(pdf_file_name, 'rb') as pdf_file:
+            await bot.send_document(msg.from_user.id, pdf_file)
+
     await state.finish()
     await delete_files(photos + [pdf_file_name])
 
