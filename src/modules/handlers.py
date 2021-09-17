@@ -4,9 +4,9 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from modules.bot import bot, dp
+from modules.files import delete_files
 from modules.img2pdf import generate_pdf
 from modules.states import States
-from module.files import delete_files, download_files
 
 
 @dp.message_handler(state='*', commands=['start'])
@@ -71,6 +71,19 @@ async def process_stop_uploading(msg: types.Message, state: FSMContext):
     await msg.reply(' '.join(message), reply=False)
 
 
+@dp.message_handler(state=States.photos, content_types=['photo'])
+async def process_photo_uploading(msg: types.Message, state: FSMContext):
+    """
+    Process photo upload when state is 'photos'.
+
+    Args:
+        msg: message from user
+        state: current state
+    """
+    async with state.proxy() as pdf:
+        pdf.setdefault('photos', []).append(msg.photo[-1].file_id)
+
+
 @dp.message_handler(state=States.photos)
 async def process_text_uploading(msg: types.Message):
     """
@@ -95,14 +108,20 @@ async def process_file_name(msg: types.Message, state: FSMContext):
         msg: message from user
         state: current state
     """
+    await msg.reply('Формирую PDF файл...', reply=False)
     async with state.proxy() as pdf:
-        pdf['name'] = msg.text
+        pdf['name'] = 'media/{0}'.format(msg.text)
 
-        files = download_files(pdf['photos'], 'media/')
-        pdf_file = generate_pdf(files, pdf['name'])
-        await delete_files(files)
+        photos = []
+        for photo_id in pdf['photos']:
+            filepath = 'media/{0}.jpg'.format(photo_id)
+            await bot.download_file_by_id(photo_id, filepath)
+            photos.append(filepath)
 
-        await bot.send_document(msg.from_user.id, open(pdf_file, 'rb'))
+        pdf_file_name = generate_pdf(photos, pdf['name'])
+        await bot.send_document(msg.from_user.id, open(pdf_file_name, 'rb'))
+
+        await delete_files(photos + [pdf_file_name])
 
 
 @dp.message_handler(state='*', commands=['upload'])
